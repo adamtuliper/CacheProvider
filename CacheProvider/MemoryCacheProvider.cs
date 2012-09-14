@@ -8,19 +8,25 @@ using System.Threading.Tasks;
 namespace CacheProvider
 {
     /// <summary>
-    /// Since then 
+    /// NET Memory cache wrapper around the ICacheProvider interface to support strongly typed cache retrievals. 
     /// </summary>
     public class MemoryCacheProvider : ICacheProvider
     {
         private static ObjectCache Cache { get { return MemoryCache.Default; } }
 
+        /// <summary>
+        /// A strongly typed method to retrieve an iten from the cache. This prevents having to cast all over in your code.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public T Get<T>(string key)
         {
             return (T)Cache[key];
         }
 
         /// <summary>
-        /// 
+        /// Adds an item to the cache
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
@@ -28,16 +34,25 @@ namespace CacheProvider
         /// <param name="cacheTime">The time in seconds to cache</param>
         public void Add<T>(string key, T data, int cacheTime)
         {
-            var itemPolicy = new CacheItemPolicy {AbsoluteExpiration = DateTime.Now + TimeSpan.FromSeconds(cacheTime)};
+            var itemPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromSeconds(cacheTime) };
 
             Cache.Add(new CacheItem(key, data), itemPolicy);
         }
 
+        /// <summary>
+        /// Checks if an item in the cache exists
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool Exists(string key)
         {
             return (Cache[key] != null);
         }
 
+        /// <summary>
+        /// Remove an item from the cache
+        /// </summary>
+        /// <param name="key"></param>
         public void Remove(string key)
         {
             Cache.Remove(key);
